@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*.js.map
+
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+*.swp
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Docker volumes
+docker-data/
