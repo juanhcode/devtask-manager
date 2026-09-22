@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Typecheck and Tests After Task Completion",
+      "trigger": "PostTaskExec",
+      "description": "After Kiro completes a spec task, run TypeScript typecheck and all tests. If either fails, Kiro receives the output and can correct the issue before marking the task done.",
+      "action": {
+        "type": "command",
+        "command": "cd /Users/juanhoyos/proyectos/kiro-university/backend && echo \"=== TypeScript typecheck ===\" && npx tsc --noEmit && echo \"TYPECHECK: OK\" && echo \"=== Tests ===\" && npm test && echo \"TESTS: OK\" 2>&1",
+        "timeout": 120
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run Backend Tests on TypeScript Save",
+      "trigger": "PostFileSave",
+      "description": "After saving any backend .ts file, run the full test suite and surface results to Kiro so failures can be fixed immediately.",
+      "matcher": "backend/src/.*\\\\.ts$|backend/tests/.*\\\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "cd /Users/juanhoyos/proyectos/kiro-university/backend && npm test 2>&1 | tail -20",
+        "timeout": 90
+      }
+    }
+  ]
+}
