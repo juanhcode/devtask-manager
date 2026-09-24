@@ -1,8 +1,26 @@
 import { randomUUID } from 'node:crypto';
 
-import type { Task, TaskStats, CreateTaskInput, UpdateTaskInput, TaskFilter } from '../models/task.js';
+import type { Task, TaskStats, CreateTaskInput, UpdateTaskInput, TaskFilter, TaskStatus } from '../models/task.js';
 import type { TaskRepository } from '../repositories/taskRepository.js';
 import { AppError } from '../middleware/errorHandler.js';
+
+// ── Status transition rules (product.md) ─────────────────────────────────────
+
+const ALLOWED_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
+  TODO:        ['IN_PROGRESS', 'DONE'],
+  IN_PROGRESS: ['DONE'],
+  DONE:        ['TODO'],
+};
+
+function validateStatusTransition(current: TaskStatus, next: TaskStatus): void {
+  if (current === next) return; // idempotent — always allowed
+  if (!ALLOWED_TRANSITIONS[current].includes(next)) {
+    throw new AppError(
+      `Cannot transition task from ${current} to ${next}`,
+      422,
+    );
+  }
+}
 
 // ── Service interface ─────────────────────────────────────────────────────────
 
@@ -54,9 +72,12 @@ export function createTaskService(repository: TaskRepository): TaskService {
 
   /**
    * Updates all mutable fields of an existing task.
-   * Throws 404 if the task does not exist.
+   * Enforces allowed status transitions from product.md.
+   * Throws 404 if the task does not exist, 422 for invalid transitions.
    */
   function updateTask(id: string, input: UpdateTaskInput): Task {
+    const existing = getTaskById(id); // throws 404 if not found
+    validateStatusTransition(existing.status, input.status);
     const now = new Date().toISOString();
     const updated = repository.update(id, input, now);
     if (!updated) {

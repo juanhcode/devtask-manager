@@ -27,17 +27,17 @@ export function errorHandler(
   _next: NextFunction,
 ): void {
   if (err instanceof AppError) {
-    res.status(err.statusCode).json({ error: err.message });
+    res.status(err.statusCode).json({ error: err.message, statusCode: err.statusCode });
     return;
   }
 
   // Unexpected errors — log and return a safe 500
   console.error('[Unhandled error]', err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: 'Internal server error', statusCode: 500 });
 }
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
 export function notFoundHandler(_req: Request, res: Response): void {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'Route not found', statusCode: 404 });
 }

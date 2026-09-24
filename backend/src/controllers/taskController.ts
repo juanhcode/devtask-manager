@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
 import {
   CreateTaskSchema,
@@ -6,6 +7,11 @@ import {
   TaskFilterSchema,
 } from '../models/task.js';
 import type { TaskService } from '../services/taskService.js';
+
+// Validates that a route param :id is a non-empty string (UUID checked by the DB layer)
+const TaskIdSchema = z.object({
+  id: z.string().min(1, 'Task ID is required'),
+});
 
 // ── Controller factory ────────────────────────────────────────────────────────
 
@@ -19,7 +25,7 @@ export function createTaskController(service: TaskService) {
   function listTasks(req: Request, res: Response, next: NextFunction): void {
     const parsed = TaskFilterSchema.safeParse(req.query);
     if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.message });
+      res.status(400).json({ error: parsed.error.errors[0]?.message ?? 'Invalid query parameters' });
       return;
     }
     try {

@@ -180,17 +180,20 @@ describe('Property: createdAt immutability (BR-5)', () => {
 
   it('should never change createdAt when a task is updated', () => {
     fc.assert(
-      fc.property(validTaskInputArbitrary, validTaskInputArbitrary, (createInput, updateInput) => {
-        const created = service.createTask(createInput);
-        const updated = service.updateTask(created.id, {
-          title: updateInput.title,
-          description: updateInput.description,
-          status: updateInput.status,
-          priority: updateInput.priority,
-          tags: updateInput.tags,
-        });
-        return updated.createdAt === created.createdAt;
-      }),
+      fc.property(validTaskInputArbitrary, titleArbitrary, priorityArbitrary, tagsArbitrary,
+        (createInput, newTitle, newPriority, newTags) => {
+          const created = service.createTask(createInput);
+          // Keep the same status to avoid status-transition validation —
+          // this property is about createdAt, not status transitions.
+          const updated = service.updateTask(created.id, {
+            title: newTitle,
+            description: '',
+            status: created.status,
+            priority: newPriority,
+            tags: newTags,
+          });
+          return updated.createdAt === created.createdAt;
+        }),
       { numRuns: 100 },
     );
   });
@@ -205,17 +208,20 @@ describe('Property: updatedAt advances on update (BR-6)', () => {
 
   it('should set updatedAt >= createdAt after an update', () => {
     fc.assert(
-      fc.property(validTaskInputArbitrary, validTaskInputArbitrary, (createInput, updateInput) => {
-        const created = service.createTask(createInput);
-        const updated = service.updateTask(created.id, {
-          title: updateInput.title,
-          description: updateInput.description,
-          status: updateInput.status,
-          priority: updateInput.priority,
-          tags: updateInput.tags,
-        });
-        return new Date(updated.updatedAt).getTime() >= new Date(created.updatedAt).getTime();
-      }),
+      fc.property(validTaskInputArbitrary, titleArbitrary, priorityArbitrary, tagsArbitrary,
+        (createInput, newTitle, newPriority, newTags) => {
+          const created = service.createTask(createInput);
+          // Keep the same status to avoid status-transition validation —
+          // this property is about updatedAt timestamps, not status transitions.
+          const updated = service.updateTask(created.id, {
+            title: newTitle,
+            description: '',
+            status: created.status,
+            priority: newPriority,
+            tags: newTags,
+          });
+          return new Date(updated.updatedAt).getTime() >= new Date(created.updatedAt).getTime();
+        }),
       { numRuns: 100 },
     );
   });

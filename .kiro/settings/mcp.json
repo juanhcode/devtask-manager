@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@latest",
+        "/Users/juanhoyos/proyectos/kiro-university"
+      ],
+      "disabled": false,
+      "description": "Filesystem MCP server — provides tools to read, search, and inspect files in the DevTask project workspace."
+    }
+  }
+}
