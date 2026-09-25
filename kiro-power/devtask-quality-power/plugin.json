@@ -1,0 +1,40 @@
+{
+  "name": "devtask-quality-power",
+  "displayName": "DevTask Quality Power",
+  "version": "1.0.0",
+  "description": "Quality assurance workflows for the DevTask project: run tests, typecheck, lint, review architecture compliance, and generate quality reports.",
+  "author": "Juan Hoyos",
+  "keywords": ["testing", "typescript", "quality", "architecture", "devops"],
+  "skills": [
+    {
+      "name": "run-quality-checks",
+      "path": "skills/run-quality-checks.md",
+      "description": "Run the full quality suite: TypeScript typecheck, lint, unit tests, integration tests, and property-based tests."
+    },
+    {
+      "name": "architecture-review",
+      "path": "skills/architecture-review.md",
+      "description": "Review backend source code for compliance with the layered architecture and coding standards."
+    },
+    {
+      "name": "test-coverage-report",
+      "path": "skills/test-coverage-report.md",
+      "description": "Run tests with coverage and produce a summary of which requirements are covered."
+    }
+  ],
+  "resources": [
+    {
+      "name": "quality-checklist",
+      "path": "resources/quality-checklist.md",
+      "description": "The definitive pre-submission quality checklist for the DevTask project."
+    }
+  ],
+  "steeringFiles": [
+    {
+      "name": "quality-standards",
+      "path": ".kiro/steering/quality-standards.md",
+      "inclusion": "auto",
+      "description": "Quality gate standards — injected when running quality checks or tests."
+    }
+  ]
+}

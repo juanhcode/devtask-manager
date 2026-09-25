@@ -8,7 +8,7 @@ import {
 } from '../models/task.js';
 import type { TaskService } from '../services/taskService.js';
 
-// Validates that a route param :id is a non-empty string (UUID checked by the DB layer)
+// Validates that a route param :id is present and non-empty
 const TaskIdSchema = z.object({
   id: z.string().min(1, 'Task ID is required'),
 });
@@ -51,9 +51,13 @@ export function createTaskController(service: TaskService) {
   }
 
   function getTaskById(req: Request, res: Response, next: NextFunction): void {
-    const { id } = req.params;
+    const paramsParsed = TaskIdSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: paramsParsed.error.errors[0]?.message ?? 'Invalid ID' });
+      return;
+    }
     try {
-      const task = service.getTaskById(id);
+      const task = service.getTaskById(paramsParsed.data.id);
       res.status(200).json(task);
     } catch (err) {
       next(err);
@@ -61,14 +65,18 @@ export function createTaskController(service: TaskService) {
   }
 
   function updateTask(req: Request, res: Response, next: NextFunction): void {
-    const { id } = req.params;
-    const parsed = UpdateTaskSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.errors[0]?.message ?? 'Invalid input' });
+    const paramsParsed = TaskIdSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: paramsParsed.error.errors[0]?.message ?? 'Invalid ID' });
+      return;
+    }
+    const bodyParsed = UpdateTaskSchema.safeParse(req.body);
+    if (!bodyParsed.success) {
+      res.status(400).json({ error: bodyParsed.error.errors[0]?.message ?? 'Invalid input' });
       return;
     }
     try {
-      const task = service.updateTask(id, parsed.data);
+      const task = service.updateTask(paramsParsed.data.id, bodyParsed.data);
       res.status(200).json(task);
     } catch (err) {
       next(err);
@@ -76,9 +84,13 @@ export function createTaskController(service: TaskService) {
   }
 
   function deleteTask(req: Request, res: Response, next: NextFunction): void {
-    const { id } = req.params;
+    const paramsParsed = TaskIdSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: paramsParsed.error.errors[0]?.message ?? 'Invalid ID' });
+      return;
+    }
     try {
-      service.deleteTask(id);
+      service.deleteTask(paramsParsed.data.id);
       res.status(204).send();
     } catch (err) {
       next(err);
@@ -86,9 +98,13 @@ export function createTaskController(service: TaskService) {
   }
 
   function completeTask(req: Request, res: Response, next: NextFunction): void {
-    const { id } = req.params;
+    const paramsParsed = TaskIdSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: paramsParsed.error.errors[0]?.message ?? 'Invalid ID' });
+      return;
+    }
     try {
-      const task = service.completeTask(id);
+      const task = service.completeTask(paramsParsed.data.id);
       res.status(200).json(task);
     } catch (err) {
       next(err);
